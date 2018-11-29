@@ -14,11 +14,17 @@ import json
 
 
 class Sign(object):
+	"""
+	请求签名
+	"""
     def __init__(self, secretKey):
         self.secretKey = secretKey
 
-    # 生成签名串
+    
     def make(self, requestHost, requestUri, params, method='GET'):
+		"""
+		生成签名串
+		"""
         srcStr = method.upper() + requestHost + requestUri + '?' + "&".join(k.replace("_", ".") + "=" + str(params[k]) for k in sorted(params.keys()))
         hashed = hmac.new(bytes(self.secretKey, 'utf8'), bytes(srcStr, 'utf8'), hashlib.sha1)
         return base64.b64encode(hashed.digest())
