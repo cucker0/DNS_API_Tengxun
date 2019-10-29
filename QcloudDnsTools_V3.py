@@ -14,25 +14,23 @@ import json
 
 
 class Sign(object):
-	"""
-	请求签名
-	"""
+    """请求签名"""
+    
     def __init__(self, secretKey):
         self.secretKey = secretKey
 
     
     def make(self, requestHost, requestUri, params, method='GET'):
-		"""
-		生成签名串
-		"""
+        """生成签名串"""
+        
         srcStr = method.upper() + requestHost + requestUri + '?' + "&".join(k.replace("_", ".") + "=" + str(params[k]) for k in sorted(params.keys()))
         hashed = hmac.new(bytes(self.secretKey, 'utf8'), bytes(srcStr, 'utf8'), hashlib.sha1)
         return base64.b64encode(hashed.digest())
 
 class DnsHelper(object):
-    """
-    DNS 相关操作类
-    ## API密钥管理 https://console.cloud.tencent.com/cam/capi
+    """DNS 相关操作类
+    
+    API密钥管理 https://console.cloud.tencent.com/cam/capi
     """
     SecretId = 'xxxXTG66xxxUMF6xxxhfmEmzxxxmAOYe2'
     SecretKey = 'xxxacLw2MzxxxC773rxxxus8kxxx'
@@ -48,13 +46,18 @@ class DnsHelper(object):
         self.url = 'https://%s%s' % (DnsHelper.requestHost, DnsHelper.requestUri)
 
     def get_domain_list(self, offset=0, length=20, keyword='', qProjectId=''):
-        """
-        获取域名列表
-        :param offset: 偏移量，默认为0。关于offset的更进一步介绍参考 API 简介中的相关小节。
-        :param length:返回数量，默认 20，最大值 100。关于limit的更进一步介绍参考 API 简介中的相关小节。
-        :param keyword:（过滤条件）根据关键字搜索域名
-        :param qProjectId:（过滤条件）项目ID
-        :return: 域名列表
+        """获取域名列表
+        
+        :param offset: int 
+            偏移量，默认为0。关于offset的更进一步介绍参考 API 简介中的相关小节。
+        :param length: int
+            返回数量，默认 20，最大值 100。关于limit的更进一步介绍参考 API 简介中的相关小节。
+        :param keyword: str
+            （过滤条件）根据关键字搜索域名
+        :param qProjectId: int
+            （过滤条件）项目ID
+        :return: json
+            域名列表
         """
         self.params['Action'] = 'DomainList'
         self.params['offset'] = offset
@@ -68,11 +71,13 @@ class DnsHelper(object):
         return json.loads(ret.text)
 
     def add_domain(self, domain, projectId=''):
-        """
-        添加域名
-        :param domain:要添加的域名（主域名，不包括 www，例如：qcloud.com）
-        :param projectId:项目ID，如果不填写，则为“默认项目”
-        :return:
+        """添加域名
+        
+        :param domain: str
+            要添加的域名（主域名，不包括 www，例如：qcloud.com）
+        :param projectId: int
+            项目ID，如果不填写，则为“默认项目”
+        :return: json
         """
         self.params['Action'] = 'DomainCreate'
         self.params['domain'] = domain
@@ -84,11 +89,13 @@ class DnsHelper(object):
         return json.loads(ret.text)
 
     def set_domain_status(self, domain, status):
-        """
-        设置域名状态
-        :param domain:要操作的域名（主域名，不包括 www，例如：qcloud.com）
-        :param status:可选值为：'disable' 和 'enable'，分别代表暂停、启用
-        :return:
+        """设置域名状态
+        
+        :param domain: str
+            要操作的域名（主域名，不包括 www，例如：qcloud.com）
+        :param status: str
+            可选值为：'disable' 和 'enable'，分别代表暂停、启用
+        :return: json
         """
         self.params['Action'] = 'SetDomainStatus'
         self.params['domain'] = domain
@@ -98,9 +105,10 @@ class DnsHelper(object):
         return json.loads(ret.text)
 
     def delete_domain(self, domain):
-        """
-        删除域名
-        :param domain: 要删除的域名
+        """删除域名
+        
+        :param domain: str
+            要删除的域名
         :return:
         """
         self.params['Action'] = 'DomainDelete'
@@ -112,15 +120,21 @@ class DnsHelper(object):
 
 
     def get_record_list(self, domain_name, offset=0, length=20, subDomain='', recordType='', qProjectId=0):
-        """
-        获取解析记录列表
-        :param domain_name: 要操作的域名（主域名，不包括 www，例如：qcloud.com）
-        :param offset:int类型，偏移量，默认为0。关于offset的更进一步介绍参考 API 简介中的相关小节。
-        :param length:int类型，返回数量，默认 20，最大值 100。关于limit的更进一步介绍参考 API 简介中的相关小节。
-        :param subDomain:（过滤条件）根据子域名进行过滤
-        :param recordType:（过滤条件）根据记录类型进行过滤
-        :param qProjectId:（过滤条件）项目ID, int类型
-        :return:
+        """获取解析记录列表
+        
+        :param domain_name: str
+            要操作的域名（主域名，不包括 www，例如：qcloud.com）
+        :param offset:int
+            偏移量，默认为0。关于offset的更进一步介绍参考 API 简介中的相关小节。
+        :param length:int
+            返回数量，默认 20，最大值 100。关于limit的更进一步介绍参考 API 简介中的相关小节。
+        :param subDomain:str
+            （过滤条件）根据子域名进行过滤
+        :param recordType: str
+            （过滤条件）根据记录类型进行过滤
+        :param qProjectId: int
+            （过滤条件）项目ID,
+        :return: json
         """
         self.params['Action'] = 'RecordList'
         self.params['domain'] = domain_name
@@ -136,16 +150,23 @@ class DnsHelper(object):
         return json.loads(ret.text)
 
     def add_record(self, domain, subDomain, recordType, value, recordLine='默认', ttl=600, mx=1):
-        """
-        添加解析记录
-        :param domain:要添加解析记录的域名（主域名，不包括 www，例如：qcloud.com）
-        :param subDomain:子域名，例如：www
-        :param recordType:记录类型，可选的记录类型为："A", "CNAME", "MX", "TXT", "NS", "AAAA", "SRV"
-        :param value:记录值, 如 IP:192.168.10.2, CNAME: cname.dnspod.com., MX: mail.dnspod.com.
-        :param recordLine:记录的线路名称，如："默认"
-        :param ttl:TTL 值，范围1-604800，不同等级域名最小值不同，默认为 600
-        :param mx:MX优先级，范围为 0~50，当记录类型为 MX 时必选
-        :return:
+        """添加解析记录
+        
+        :param domain: str
+            要添加解析记录的域名（主域名，不包括 www，例如：qcloud.com）
+        :param subDomain: str
+            子域名，例如：www
+        :param recordType: str
+            记录类型，可选的记录类型为："A", "CNAME", "MX", "TXT", "NS", "AAAA", "SRV"
+        :param value: str
+            记录值, 如 IP:192.168.10.2, CNAME: cname.dnspod.com., MX: mail.dnspod.com.
+        :param recordLine: str
+            记录的线路名称，如："默认"
+        :param ttl: int
+            TTL 值，范围1-604800，不同等级域名最小值不同，默认为 600
+        :param mx: int
+            MX优先级，范围为 0~50，当记录类型为 MX 时必选
+        :return: json
         """
         self.params['Action'] = 'RecordCreate'
         self.params['domain'] =domain
@@ -162,12 +183,15 @@ class DnsHelper(object):
         return json.loads(ret.text)
 
     def update_record_status(self, domain, recordId, status):
-        """
-        设置解析记录状态
-        :param domain:解析记录所在的域名
-        :param recordId:解析记录ID，int类型
-        :param status:可选值为：'disable' 和 'enable'，分别代表暂停、启用
-        :return:
+        """设置解析记录状态
+        
+        :param domain: str
+            解析记录所在的域名
+        :param recordId: int
+            解析记录ID
+        :param status: str
+            可选值为：'disable' 和 'enable'，分别代表暂停、启用
+        :return: json
         """
         self.params['Action'] = 'RecordStatus'
         self.params['domain'] = domain
@@ -179,17 +203,25 @@ class DnsHelper(object):
         return json.loads(ret.text)
 
     def update_record(self, domain, recordId, subDomain, recordType, value, recordLine='默认', ttl=600, mx=1):
-        """
-        修改解析记录
-        :param domain: 要操作的域名（主域名，不包括 www，例如：qcloud.com）
-        :param recordId: int类型，解析记录的ID，可通过RecordList接口返回值中的 id 获取
-        :param subDomain: 子域名，例如：www
-        :param recordType: 记录类型，可选的记录类型为："A", "CNAME", "MX", "TXT", "NS", "AAAA", "SRV"
-        :param value:记录值, 如 IP:192.168.10.2, CNAME: cname.dnspod.com., MX: mail.dnspod.com.
-        :param recordLine: 记录的线路名称，如："默认"
-        :param ttl: TTL 值，范围1-604800，不同等级域名最小值不同，默认为 600， int类型
-        :param mx: MX优先级，范围为 0~50，当记录类型为 MX 时必选， int类型
-        :return:
+        """修改解析记录
+        
+        :param domain: 
+            要操作的域名（主域名，不包括 www，例如：qcloud.com）
+        :param recordId: int
+            解析记录的ID，可通过RecordList接口返回值中的 id 获取
+        :param subDomain: str
+            子域名，例如：www
+        :param recordType: str
+            记录类型，可选的记录类型为："A", "CNAME", "MX", "TXT", "NS", "AAAA", "SRV"
+        :param value: str
+            记录值, 如 IP:192.168.10.2, CNAME: cname.dnspod.com., MX: mail.dnspod.com.
+        :param recordLine: str
+            记录的线路名称，如："默认"
+        :param ttl: int
+            TTL 值，范围1-604800，不同等级域名最小值不同，默认为 600， int类型
+        :param mx: int
+            MX优先级，范围为 0~50，当记录类型为 MX 时必选， int类型
+        :return: json
         """
         self.params['Action'] = 'RecordModify'
         self.params['domain'] = domain
@@ -207,11 +239,13 @@ class DnsHelper(object):
         return json.loads(ret.text)
 
     def delete_record(self, domain, recordId):
-        """
-        删除解析记录
-        :param domain:解析记录所在的域名
-        :param recordId:int类型，解析记录ID
-        :return:
+        """删除解析记录
+        
+        :param domain:
+            解析记录所在的域名
+        :param recordId: int
+            解析记录ID
+        :return: json
         """
         self.params['Action'] = 'RecordDelete'
         self.params['domain'] = domain
