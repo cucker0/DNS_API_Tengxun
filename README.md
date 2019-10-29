@@ -1,5 +1,5 @@
 # DNS_API_Tengxun
-腾讯DNS云解析
+腾讯DNS云解析API
 
 ## 官网文档
 https://cloud.tencent.com/document/api/302/4032
